@@ -19,10 +19,14 @@ package fmpp.tools;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.function.Function;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.ProjectComponent;
 import org.apache.tools.ant.Target;
+import org.apache.tools.ant.types.Mapper;
+import org.apache.tools.ant.util.FileNameMapper;
+import org.apache.tools.ant.util.IdentityMapper;
 
 import fmpp.ProcessingException;
 import fmpp.dataloaders.AntTaskDataLoader;
@@ -49,6 +53,33 @@ public class AntTask extends org.apache.tools.ant.taskdefs.MatchingTask {
     private Boolean alwaysCreateDirsAltName; 
     private Boolean sourceRootAltName; 
     private Boolean outputRootAltName; 
+    
+    
+    private Mapper mapper;
+    
+    /**
+     * Add a mapper to convert the file names.
+     *
+     * @param mapper a <code>Mapper</code> value.
+     */
+    public void addMapper(Mapper mapper) {
+        if (this.mapper != null) {
+            throw new BuildException(
+                "Cannot define more than one mapper");
+        }
+        this.mapper = mapper;
+    }
+    
+    /**
+     * Add a nested filenamemapper.
+     * @param fileNameMapper the mapper to add.
+     * @since Ant 1.6.3
+     */
+    public void add(FileNameMapper fileNameMapper) {
+        Mapper m = new Mapper(getProject());
+        m.add(fileNameMapper);
+        addMapper(m);
+    }
 
     public void setConfiguration(File outputFile) {
         configuration = outputFile.getAbsolutePath();
@@ -261,7 +292,7 @@ public class AntTask extends org.apache.tools.ant.taskdefs.MatchingTask {
     public void setTagSyntax(String tagSyntax) {
         initialOps.setProperty(Settings.NAME_TAG_SYNTAX, tagSyntax);
     }
-
+    
     /**
      * @since 0.9.16
      */
@@ -369,7 +400,7 @@ public class AntTask extends org.apache.tools.ant.taskdefs.MatchingTask {
         initialOps.setProperty(
                 Settings.OLD_NAME_REMOVE_POSTFIX, removePostfix);
     }
-    
+
     /**
      * @since 0.9.16
      */
@@ -476,6 +507,13 @@ public class AntTask extends org.apache.tools.ant.taskdefs.MatchingTask {
                     }
                 }
 
+                FileNameMapper mapperImpl = mapper == null ? new IdentityMapper() : mapper.getImplementation();
+                ss.set(Settings.NAME_FILENAME_MAPPER, (Function<String, String>) ((String filename) -> {
+                	String[] mapped = mapperImpl.mapFileName(filename);
+                	if(mapped == null)
+                		return filename;
+                	return mapped[0];}));
+                
                 // single file mode
                 if (ss.get(Settings.NAME_OUTPUT_FILE) != null) {
                     singleFileMode = true;
@@ -556,8 +594,8 @@ public class AntTask extends org.apache.tools.ant.taskdefs.MatchingTask {
                             .getIncludedDirectories();
                     String[] sourceDirectories = new String[scanResults.length];
                     for (int i = 0; i < scanResults.length; i++) {
-                        File f = new File(scannerBase, scanResults[i]);
-                        sourceDirectories[i] = f.getAbsolutePath();
+                    	File f = new File(scannerBase,  scanResults[i]);
+                    	sourceDirectories[i] = f.getAbsolutePath();
                     }
                 }
             } catch (SettingException e) {

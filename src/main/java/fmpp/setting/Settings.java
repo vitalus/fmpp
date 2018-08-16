@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.function.Function;
 
 import bsh.EvalError;
 import fmpp.DataModelBuildingException;
@@ -166,6 +167,11 @@ public class Settings {
     //        = "xmlCatalogAllowPi"; [I don't know how to use those PI-s...]
     public static final String NAME_VALIDATE_XML = "validateXml";
     public static final String NAME_XML_RENDERINGS = "xmlRenderings";
+    
+    /**
+     * Must be an instance of function  Function<String, String>
+     */
+    public static final String NAME_FILENAME_MAPPER="filenameMapper";
 
     // Values of standard settings:
     
@@ -176,7 +182,7 @@ public class Settings {
             = "shared";
     public static final String VALUE_TAG_SYNTAX_ANGLE_BRACKET = "angleBracket";
     public static final String VALUE_TAG_SYNTAX_SQUARE_BRACKET = "squareBracket";
-    public static final String VALUE_TAG_SYNTAX_AUTO_DETECT = "autoDetect";
+    public static final String VALUE_TAG_SYNTAX_AUTO_DETECT =    "autoDetect";
     /* @since 0.9.16 */
     public static final String VALUE_INTERPOLATION_SYNTAX_LEGACY = "legacy";
     /* @since 0.9.16 */
@@ -850,6 +856,8 @@ public class Settings {
         //        NAME_XML_CATALOG_ALLOW_PI, TYPE_STRING, false, false));
         stdDef(NAME_VALIDATE_XML, TYPE_BOOLEAN, false, false);
         stdDef(NAME_XML_RENDERINGS, TYPE_SEQUENCE, true, false);
+        
+        stdDef(NAME_FILENAME_MAPPER, TYPE_ANY, false, false);
     }
 
     // -------------------------------------------------------------------------
@@ -1391,7 +1399,7 @@ public class Settings {
                         + "\". Value " + StringUtil.jQuote(s) + " is invalid.");
             }
         }
-
+        
         s = (String) get(NAME_INTERPOLATION_SYNTAX);
         if (s != null) {
             if (s.equals(VALUE_INTERPOLATION_SYNTAX_LEGACY)) {
@@ -1616,12 +1624,14 @@ public class Settings {
                         e);
             }
         }
-
+       
         b = (Boolean) get(NAME_REMOVE_FREEMARKER_EXTENSIONS);
         if (b != null) {
             eng.setRemoveFreemarkerExtensions(b.booleanValue());
         }
-        
+        Object mapper = get(NAME_FILENAME_MAPPER);        if(mapper != null && mapper instanceof Function) {
+        	eng.setFilenameMapper((Function)mapper);
+        }
         s = (String) get(NAME_SKIP_UNCHANGED);
         if (s != null) {
             if (s.equalsIgnoreCase("none")) {
@@ -1945,10 +1955,10 @@ public class Settings {
                     try {
                         dataModel.putAll(TddUtil.convertToDataMap(o));
                     } catch (TypeNotConvertableToMapException e) {
-                        throw new BugException("Delayed step call can't be "
-                                + o.getClass().getName());
-                    }
+                    throw new BugException("Delayed step call can't be "
+                            + o.getClass().getName());
                 }
+            }
             }
             eng.addData(dataModel);
         }
@@ -2372,7 +2382,7 @@ public class Settings {
         if (def.type != TYPE_ANY) {
             NullArgumentException.check("value", value);
         }
-        
+
         try {
             value = def.type.convert(this, value);
         } catch (SettingException e) {
@@ -2388,7 +2398,7 @@ public class Settings {
             if (modOp == ModificationOperation.ADD && def.merge) {
                 try {
                     if (modPrec == ModificationPrecendence.DEFAULT_VALUE) {
-                        value = def.type.merge(this, value, oldValue);
+                    value = def.type.merge(this, value, oldValue);
                     } else {
                         value = def.type.merge(this, oldValue, value);
                     }
@@ -2413,16 +2423,16 @@ public class Settings {
         for (Map.Entry<String, Object> ent : settingMap.entrySet()) {
             String name = ent.getKey();
             Object value = ent.getValue();
-            
+
             Object oldValue = values.get(name);
             if (oldValue != null) {
                 transaction.put(name, oldValue); // For later merging
             }
-            
+
             modify(transaction, name, value, modOp, modPrec);            
-        }
+            }
         values.putAll(transaction);
-    }
+        }
 
     private void modifyWithStrings(Properties props, ModificationOperation modOp, ModificationPrecendence modPrec)
             throws SettingException {
@@ -2436,11 +2446,11 @@ public class Settings {
             if (oldValue != null) {
                 transaction.put(name, oldValue); // For later merging
             }
-            
+
             modify(transaction, name, parseSettingValue(name, value), modOp, modPrec);            
-        }
+            }
         values.putAll(transaction);
-    }
+        }
     
     private Object parseSettingValue(String name, String value)
             throws SettingException {
@@ -2812,7 +2822,7 @@ public class Settings {
             return null;
         }
     }
-    
+
     private static void loadOutputFormatChoosers(Engine eng, List ls)
             throws SettingException {
         eng.clearOutputFormatChoosers();
@@ -3629,6 +3639,6 @@ public class Settings {
         protected EvaluationEnvironment getEvaluationEnvironment() {
             return null;
         }
-    }    
+    }
     
 }

@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -274,6 +275,8 @@ public class Engine {
     // Session state
     private Map<File, Boolean> ignoredDirCache = new HashMap<File, Boolean>();
     private Set<File> processedFiles = new HashSet<File>();
+
+	private Function<String, String> mapper;
 
     /**
      * Same as {@link #Engine(Version) Engine((Version) null)}.
@@ -2085,6 +2088,16 @@ public class Engine {
         replaceExtensions.add(new String[] {oldExtension, newExtension});
     }
     
+    /**
+     * Sets mapper for filenames.
+     * 
+     * @param mapper
+     * @since 0.9.6 by Arbonaut Oy
+     */
+    public void setFilenameMapper(Function<String, String> mapper) {
+		this.mapper = mapper;
+    }
+    
     private void checkExtension(String paramName, String extension) {
         if (extension == null || extension.length() == 0) {
             throw new IllegalArgumentException(
@@ -2956,6 +2969,8 @@ public class Engine {
             }
         }
         
+        fn = applyFilenameMapper(fn);
+        
         if (fn.length() == 0) {
             throw new IOException(
                     "The deduced output file name is empty "
@@ -2966,7 +2981,11 @@ public class Engine {
         return new File(f.getParent(), fn).getCanonicalFile();
     }
 
-    private String applyRemoveExtensionSetting(String fn) {
+    private String applyFilenameMapper(String fn) {
+    	return (mapper != null) ?  mapper.apply(fn) : fn;    	
+	}
+
+	private String applyRemoveExtensionSetting(String fn) {
         final String fnNormdCase = csPathCmp ? fn : fn.toLowerCase();
         int ln = removeExtensions.size();
         for (int i = 0; i < ln; i++) {
