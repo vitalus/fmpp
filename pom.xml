@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>9</version>
+	</parent>
+
+	<groupId>net.sourceforge.fmpp</groupId>
+	<artifactId>fmpp</artifactId>
+	<version>0.9.16.arbo-SNAPSHOT</version>
+
+	<packaging>jar</packaging>
+
+	<name>FMPP</name>
+	<description>General-purpose text file preprocessor tool that uses FreeMarker templates.</description>
+	<url>http://fmpp.sourceforge.net</url>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://fmpp.sourceforge.net/license.html</url>
+		</license>
+	</licenses>
+
+
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<freemarker.version>2.3.23</freemarker.version>
+		<bsh.version>2.0b4</bsh.version>
+		<xmlResolver.version>1.2</xmlResolver.version>
+		<imageinfo.version>1.9</imageinfo.version>
+		<ant.version>1.9.7</ant.version>
+	</properties>
+
+	<scm>
+		<connection>scm:git:git@github.com:vitalus/fmpp.git</connection>
+		<developerConnection>scm:git:git@github.com:vitalus/fmpp.git</developerConnection>
+		<url>git@github.com:vitalus/fmpp.git</url>
+	</scm>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>${freemarker.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.beanshell</groupId>
+			<artifactId>bsh</artifactId>
+			<version>${bsh.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>xml-resolver</groupId>
+			<artifactId>xml-resolver</artifactId>
+			<version>${xmlResolver.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.devlib.schmidt</groupId>
+			<artifactId>imageinfo</artifactId>
+			<version>${imageinfo.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant</artifactId>
+			<version>${ant.version}</version>
+			<scope>provided</scope>
+		</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+				<scope>test</scope>
+			</dependency>
+	</dependencies>
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>arbo-libs-snapshots-local</id>
+			<uniqueVersion>false</uniqueVersion>
+			<name>Arbonaut Maven repo for artifact snapshots</name>
+			<url>http://vserver3:9005/artifactory/ext-snapshots-local</url>
+		</snapshotRepository>
+		<repository>
+			<id>arbo-libs-releases-local</id>
+			<name>Arbonaut Maven repository for artifact releases</name>
+			<url>http://vserver3:9005/artifactory/ext-releases-local</url>
+		</repository>
+	</distributionManagement>
+
+</project>

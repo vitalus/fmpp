@@ -55,10 +55,10 @@
         <attribute name="Extension-name" value="fmpp" />
         <attribute name="Specification-Title" value="FMPP" />
         <attribute name="Specification-Version" value="${version}" />
-        <attribute name="Specification-Vendor" value="Dániel Dékány" />
+        <attribute name="Specification-Vendor" value="Dï¿½niel Dï¿½kï¿½ny" />
         <attribute name="Implementation-Title" value="FMPP" />
         <attribute name="Implementation-Version" value="${version}" />
-        <attribute name="Implementation-Vendor" value="Dániel Dékány" />
+        <attribute name="Implementation-Vendor" value="Dï¿½niel Dï¿½kï¿½ny" />
       </manifest>
     </jar>
   </target>
@@ -82,8 +82,8 @@
            encoding="utf-8"
            deprecation="off"
            debug="on"
-           source="1.5"
-           target="1.5"
+           source="1.8"
+           target="1.8"
     >
       <classpath refid="classpath.path" />
     </javac>
