@@ -61,6 +61,7 @@ public class AntTask extends org.apache.tools.ant.taskdefs.MatchingTask {
      * Add a mapper to convert the file names.
      *
      * @param mapper a <code>Mapper</code> value.
+     * @since 0.9.16
      */
     public void addMapper(Mapper mapper) {
         if (this.mapper != null) {
@@ -73,7 +74,7 @@ public class AntTask extends org.apache.tools.ant.taskdefs.MatchingTask {
     /**
      * Add a nested filenamemapper.
      * @param fileNameMapper the mapper to add.
-     * @since Ant 1.6.3
+     * @since 0.9.16
      */
     public void add(FileNameMapper fileNameMapper) {
         Mapper m = new Mapper(getProject());

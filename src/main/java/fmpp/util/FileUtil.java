@@ -174,6 +174,12 @@ public class FileUtil {
      */
     public static File resolveRelativeUnixPath(File root, File wd, String path)
             throws IOException {
+    	
+    	File isAbsolute = new File(path);
+    	if(isAbsolute.isAbsolute()) {
+    		return isAbsolute;
+    	}
+    	
         File c;
         int i;
         if (path.startsWith("/")) {

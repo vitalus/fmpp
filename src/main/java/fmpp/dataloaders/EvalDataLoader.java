@@ -47,6 +47,7 @@ public class EvalDataLoader implements DataLoader {
         
         Interpreter intp = new Interpreter();
         intp.set("engine", e);
+        intp.setClassLoader(this.getClass().getClassLoader());
         
         if (ln > 1) {
             o = args.get(1);
