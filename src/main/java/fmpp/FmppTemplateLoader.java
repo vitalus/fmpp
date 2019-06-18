@@ -40,6 +40,12 @@ class FmppTemplateLoader implements TemplateLoader {
 
     public Object findTemplateSource(String name)
             throws IOException {
+    	
+    	File absolutePathFile = new File(name);
+    	if(absolutePathFile.isAbsolute() && absolutePathFile.isFile()) {
+    		return absolutePathFile;
+    	}
+    	
         if (name.indexOf('\\') != -1) {
             throw new IOException("Malformed path. FreeMarker paths use slash "
                     + "(/) to separate path components, not backslash (\\). "
